@@ -1,6 +1,49 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { createServer, Model } from 'miragejs';
+
 import { App } from './App';
+
+createServer({
+  models: {
+    transaction: Model
+  },
+  routes() {
+    this.namespace = 'api';
+
+    this.get('/transactions', () => {
+      return this.schema.all('transaction');
+    })
+
+    this.post('/transactions', (schema, request) => {
+      const data = JSON.parse(request.requestBody);
+
+      return schema.create('transaction', data);
+    })
+  },
+  seeds(server) {
+    server.db.loadData({
+      transactions: [
+        {
+          id: 1,
+          title: 'Freelance de website',
+          type: 'deposit',
+          category: 'Desenvolvimento',
+          amount: 6000,
+          createdAt: new Date('2021-07-09 09:00:00')
+        },
+        {
+          id: 2,
+          title: 'Aluguel',
+          type: 'withdraw',
+          category: 'Casa',
+          amount: 600,
+          createdAt: new Date('2021-07-19 14:54:00')
+        }
+      ]
+    })
+  }
+})
 
 ReactDOM.render(
   <React.StrictMode>
